@@ -22,10 +22,6 @@ class Blog(BasePlugin):
     def on_nav(self, nav, config, files):
         self.nav = nav
 
-        # load all the pages first, so the titles are correct
-        for page in nav.pages:
-            page.read_source(config)
-
         # ordered by time
         ordered = []
         # nested by year and month
@@ -34,6 +30,13 @@ class Blog(BasePlugin):
         for f in files:
             if not f.is_documentation_page():
                 continue
+
+            # Skip files like `CNAME`
+            if not f.page:
+                continue
+
+            # Read title
+            f.page.read_source(config)
 
             parsed = self.parse_url(f.url)
             if parsed:
